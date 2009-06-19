@@ -7,33 +7,26 @@ class af_orm_sphinx_MorphinxSearch
 
     private $client;
 
-    private $args = array();
-
     private $conf = NULL;
 
     public function __construct($args = array())
     {
-        $this->args = $args;
         $this->client = new af_orm_sphinx_SphinxClient();
+        $this->getConf($args);
         $this->setClient();
     }
 
     public function search($pattern)
     {
-        $conf = $this->getConf();
         return $this->client->Query ( $pattern, $conf['index'] );
     }
 
-    private function getConf()
+    private function getConf($args)
     {
-        if(is_null($this->conf))
-        {
-            if(isset($this->args['conf']))
-                $this->conf = array_merge($this->getDefaultConf(), $this->args['conf']);
-            else
-                $this->conf = $this->getDefaultConf();
-        }
-        return $this->conf;
+        if(isset($args['conf']))
+          $this->conf = array_merge($this->getDefaultConf(), $args['conf']);
+        else
+          $this->conf = $this->getDefaultConf();
     }
 
     private function getDefaultConf()
@@ -44,7 +37,6 @@ class af_orm_sphinx_MorphinxSearch
 
     private function setClient()
     {
-        $conf = $this->getConf();
         $this->client->SetServer ( $conf['host'], $conf['port'] );
         $this->client->SetIndexWeights ( array ( "sfrjt_user_User_index" => 2, "sfrjt_user_Artist_index" => 3 ) );
         //$this->client->SetConnectTimeout ( $conf['connect_timeout'] );
